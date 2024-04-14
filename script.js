@@ -38,9 +38,7 @@ function visualizacoesRecentes() {
 }
 function loginViaQRCode() {
     const constraints = {
-        video: {
-            facingMode: 'environment' // Use a câmera traseira se disponível
-        }
+        video: { facingMode: 'environment' } // Use a câmera traseira se disponível
     };
 
     // Solicita permissão para acessar a câmera
@@ -50,8 +48,9 @@ function loginViaQRCode() {
             video.srcObject = stream;
             video.setAttribute('playsinline', true); // iOS
             video.play();
-            
-            document.body.appendChild(video); // Adiciona o vídeo à página para exibir a câmera
+
+            const cameraContainer = document.getElementById('camera-container');
+            cameraContainer.appendChild(video); // Adiciona o vídeo à página para exibir a câmera
         })
         .catch(err => {
             console.error('Erro ao acessar a câmera:', err);
