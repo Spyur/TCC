@@ -37,42 +37,23 @@ function visualizacoesRecentes() {
     */
 }
 function loginViaQRCode() {
-    const video = document.createElement('video');
-    const canvasElement = document.createElement('canvas');
-    const canvas = canvasElement.getContext('2d');
+    const constraints = {
+        video: {
+            facingMode: 'environment' // Use a câmera traseira se disponível
+        }
+    };
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
+            const video = document.createElement('video');
             video.srcObject = stream;
             video.setAttribute('playsinline', true); // iOS
-            video.play().then(() => {
-                document.getElementById('camera-status').style.display = 'block'; // Mostra a mensagem
-                requestAnimationFrame(tick);
-            });
+            video.play();
+            
+            document.body.appendChild(video); // Adiciona o vídeo à página para exibir a câmera
         })
         .catch(err => {
             console.error('Erro ao acessar a câmera:', err);
-            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida.');
+            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida e se você está em um ambiente seguro (HTTPS).');
         });
-
-    function tick() {
-        video.style.width = '100%';
-        video.style.height = 'auto';
-
-        canvasElement.width = video.videoWidth;
-        canvasElement.height = video.videoHeight;
-        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'dontInvert',
-        });
-
-        if (code) {
-            // Aqui você pode adicionar a lógica para lidar com o QR code lido
-            alert('QR code lido: ' + code.data);
-            // Por exemplo, fazer uma requisição para autenticar com base no QR code lido
-        }
-
-        requestAnimationFrame(tick);
-    }
 }
