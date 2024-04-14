@@ -41,7 +41,6 @@ function loginViaQRCode() {
         video: { facingMode: 'environment' } // Use a câmera traseira se disponível
     };
 
-    // Solicita permissão para acessar a câmera
     navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
             const video = document.createElement('video');
@@ -51,9 +50,30 @@ function loginViaQRCode() {
 
             const cameraContainer = document.getElementById('camera-container');
             cameraContainer.appendChild(video); // Adiciona o vídeo à página para exibir a câmera
+
+            const canvasElement = document.createElement('canvas');
+            const canvas = canvasElement.getContext('2d');
+
+            const tick = () => {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvasElement.width = video.videoWidth;
+                    canvasElement.height = video.videoHeight;
+                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                    const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert',
+                    });
+
+                    if (code) {
+                        alert('QR code lido: ' + code.data);
+                        // Aqui você pode adicionar a lógica para autenticar com base no QR code lido
+                    }
+                }
+
+                requestAnimationFrame(tick);
+            };
+
+            requestAnimationFrame(tick);
         })
-        .catch(err => {
-            console.error('Erro ao acessar a câmera:', err);
-            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida e se você está em um ambiente seguro (HTTPS).');
-        });
-}
+        .cat
+
