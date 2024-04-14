@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <h1>Bem-vindo! <span id="username"></span></h1>
+        <div class="buttons-container">
+            <button onclick="visualizacoesRecentes()">Visualizações recentes</button>
+            <button>Login por código</button>
+            <button onclick="loginViaQRCode()">Login via QR code</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
