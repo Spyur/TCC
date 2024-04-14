@@ -37,43 +37,41 @@ function visualizacoesRecentes() {
     */
 }
 function loginViaQRCode() {
-    const constraints = {
-        video: { facingMode: 'environment' } // Use a câmera traseira se disponível
-    };
+    const video = document.createElement('video');
+    const canvasElement = document.createElement('canvas');
+    const canvas = canvasElement.getContext('2d');
 
-    navigator.mediaDevices.getUserMedia(constraints)
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(stream => {
-            const video = document.createElement('video');
             video.srcObject = stream;
             video.setAttribute('playsinline', true); // iOS
-            video.play();
-
-            const cameraContainer = document.getElementById('camera-container');
-            cameraContainer.appendChild(video); // Adiciona o vídeo à página para exibir a câmera
-
-            const canvasElement = document.createElement('canvas');
-            const canvas = canvasElement.getContext('2d');
-
-            const tick = () => {
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvasElement.width = video.videoWidth;
-                    canvasElement.height = video.videoHeight;
-                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-                    const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: 'dontInvert',
-                    });
-
-                    if (code) {
-                        alert('QR code lido: ' + code.data);
-                        // Aqui você pode adicionar a lógica para autenticar com base no QR code lido
-                    }
-                }
-
+            video.play().then(() => {
                 requestAnimationFrame(tick);
-            };
-
-            requestAnimationFrame(tick);
+            });
         })
-        .cat
+        .catch(err => {
+            console.error('Erro ao acessar a câmera:', err);
+            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida.');
+        });
 
+    function tick() {
+        video.style.width = '100%';
+        video.style.height = 'auto';
+
+        canvasElement.width = video.videoWidth;
+        canvasElement.height = video.videoHeight;
+        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'dontInvert',
+        });
+
+        if (code) {
+            // Aqui você pode adicionar a lógica para lidar com o QR code lido
+            alert('QR code lido: ' + code.data);
+            // Por exemplo, fazer uma requisição para autenticar com base no QR code lido
+        }
+
+        requestAnimationFrame(tick);
+    }
+}
