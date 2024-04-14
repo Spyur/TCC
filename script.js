@@ -46,6 +46,7 @@ function loginViaQRCode() {
             video.srcObject = stream;
             video.setAttribute('playsinline', true); // iOS
             video.play().then(() => {
+                document.getElementById('camera-status').style.display = 'block'; // Mostra a mensagem
                 requestAnimationFrame(tick);
             });
         })
