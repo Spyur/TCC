@@ -43,6 +43,7 @@ function loginViaQRCode() {
         }
     };
 
+    // Solicita permissão para acessar a câmera
     navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
             const video = document.createElement('video');
