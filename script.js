@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 function visualizacoesRecentes() {
-    // Aqui você pode adicionar a lógica para as visualizações recentes
+    // Aqui pode adicionar a lógica para as visualizações recentes
     // Por exemplo, exibir uma mensagem ou fazer uma requisição para obter os dados das visualizações
     
     // Exemplo de exibição de mensagem
@@ -36,42 +36,59 @@ function visualizacoesRecentes() {
         .catch(error => console.error('Erro ao obter as visualizações recentes:', error));
     */
 }
-function loginViaQRCode() {
-    const video = document.createElement('video');
-    const canvasElement = document.createElement('canvas');
-    const canvas = canvasElement.getContext('2d');
 
+
+// Função para realizar o login via QR code
+function loginViaQRCode() {
+    // Criação de elementos necessários
+    const video = document.createElement('video'); // Elemento de vídeo para captura da câmera
+    const canvasElement = document.createElement('canvas'); // Elemento de canvas para processamento da imagem
+    const canvas = canvasElement.getContext('2d'); // Contexto 2D do canvas
+
+    // Solicita acesso à câmera do dispositivo
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
         .then(stream => {
-            video.srcObject = stream;
-            video.setAttribute('playsinline', true); // iOS
+            // Quando o acesso à câmera é concedido
+            video.srcObject = stream; // Define o stream de vídeo como fonte do elemento de vídeo
+            video.setAttribute('playsinline', true); // Reprodução inline no iOS
             video.play().then(() => {
-                requestAnimationFrame(tick);
+                requestAnimationFrame(tick); // Inicia o processamento dos frames do vídeo
             });
         })
         .catch(err => {
-            console.error('Erro ao acessar a câmera:', err);
-            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida.');
+            // Em caso de erro ao acessar a câmera
+            console.error('Erro ao acessar a câmera:', err); // Exibe o erro no console
+            alert('Erro ao acessar a câmera. Verifique se a permissão foi concedida.'); // Alerta o usuário sobre o erro
         });
 
+    // Função para processar os frames do vídeo
     function tick() {
-        video.style.width = '100%';
-        video.style.height = 'auto';
+        video.style.width = '100%'; // Define a largura do vídeo como 100%
+        video.style.height = 'auto'; // Altura automática para manter a proporção
 
+        // Define o tamanho do canvas com base nas dimensões do vídeo
         canvasElement.width = video.videoWidth;
         canvasElement.height = video.videoHeight;
+
+        // Desenha o frame do vídeo no canvas
         canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+
+        // Obtém os dados da imagem do canvas
         const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+
+        // Utiliza a biblioteca jsQR para decodificar o QR code na imagem
         const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'dontInvert',
+            inversionAttempts: 'dontInvert', // Opções de decodificação
         });
 
+        // Verifica se um QR code foi encontrado na imagem
         if (code) {
             // Aqui você pode adicionar a lógica para lidar com o QR code lido
-            alert('QR code lido: ' + code.data);
+            alert('QR code lido: ' + code.data); // Exibe os dados do QR code lido (exemplo)
             // Por exemplo, fazer uma requisição para autenticar com base no QR code lido
         }
 
+        // Solicita a próxima animação do navegador para continuar o processamento dos frames
         requestAnimationFrame(tick);
     }
 }
